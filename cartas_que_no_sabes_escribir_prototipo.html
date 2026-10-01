@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartas que no sabes escribir</title>
+<style>
+:root{--bg:#faf7f5;--ink:#2d2927;--muted:#766d68;--accent:#9b5c68;--soft:#f0e3e4;--white:#fff}
+*{box-sizing:border-box} body{margin:0;background:#e9e4e1;font-family:Arial,sans-serif;color:var(--ink)}
+.phone{width:390px;max-width:100%;min-height:844px;margin:0 auto;background:var(--bg);position:relative;overflow:hidden}
+.screen{display:none;padding:34px 24px 90px;min-height:844px}.screen.active{display:block}
+.logo{font-size:15px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:700}
+h1{font-family:Georgia,serif;font-size:42px;line-height:1.05;margin:80px 0 20px}
+h2{font-family:Georgia,serif;font-size:30px;line-height:1.15;margin:28px 0 12px}
+p{line-height:1.55;color:var(--muted)}
+.hero{font-size:18px;max-width:310px}.quote{font-family:Georgia,serif;font-style:italic;font-size:22px;line-height:1.4;margin:55px 0 35px}
+.btn{border:0;background:var(--accent);color:#fff;padding:16px 20px;border-radius:14px;font-size:16px;font-weight:700;width:100%;cursor:pointer;margin-top:14px}
+.btn.secondary{background:var(--soft);color:var(--accent)}
+.back{border:0;background:none;color:var(--muted);font-size:15px;padding:0;cursor:pointer}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:25px}
+.card{background:var(--white);border:1px solid #eadfdb;border-radius:18px;padding:20px 15px;min-height:120px;text-align:left;cursor:pointer}
+.card span{font-size:27px;display:block;margin-bottom:14px}.card b{font-size:15px}
+label{display:block;font-size:14px;font-weight:700;margin:20px 0 7px}
+textarea,input{width:100%;border:1px solid #ddd2cd;border-radius:13px;padding:13px;font:15px Arial;background:#fff;resize:none}
+textarea{min-height:92px}.letter{background:#fff;padding:25px 22px;border-radius:18px;box-shadow:0 5px 25px #5d494514;margin-top:25px}
+.letter h3{font-family:Georgia,serif;font-size:22px}.letter p{color:#403a37;font-family:Georgia,serif;font-size:16px;line-height:1.7}
+.small{font-size:12px;text-align:center;margin-top:18px}
+.nav{position:absolute;bottom:0;left:0;right:0;padding:15px 24px;background:#faf7f5;border-top:1px solid #eee5e1}
+</style>
+</head>
+<body>
+<div class="phone">
+
+<section id="home" class="screen active">
+<div class="logo">Cartas que no sabes escribir</div>
+<h1>Hay cosas que sentimos, pero no siempre sabemos cómo decirlas.</h1>
+<p class="hero">Nosotros encontramos las palabras por ti.</p>
+<div class="quote">“A veces una carta dice lo que la voz no se atreve.”</div>
+<button class="btn" onclick="show('types')">Escribir mi carta →</button>
+<p class="small">Una experiencia íntima, sencilla y personalizada.</p>
+</section>
+
+<section id="types" class="screen">
+<button class="back" onclick="show('home')">← Regresar</button>
+<h2>¿Qué necesitas decir?</h2>
+<p>Elige el sentimiento que más se acerca a tu historia.</p>
+<div class="cards">
+<div class="card" onclick="choose('Amor')"><span>❤️</span><b>Amor</b></div>
+<div class="card" onclick="choose('Perdón')"><span>🕊️</span><b>Perdón</b></div>
+<div class="card" onclick="choose('Reconciliación')"><span>🤍</span><b>Reconciliación</b></div>
+<div class="card" onclick="choose('Despedida')"><span>🌙</span><b>Despedida</b></div>
+<div class="card" onclick="choose('Gratitud')"><span>🌷</span><b>Gratitud</b></div>
+<div class="card" onclick="choose('Desilusión')"><span>💔</span><b>Desilusión</b></div>
+</div>
+</section>
+
+<section id="questions" class="screen">
+<button class="back" onclick="show('types')">← Regresar</button>
+<h2>Cuéntame tu historia</h2>
+<p>No necesitas escribir bonito. Solo cuéntame lo que sientes.</p>
+<label>¿Para quién es?</label><input id="person" placeholder="Ej. Para mi pareja, mi mamá...">
+<label>¿Qué sucedió?</label><textarea id="story" placeholder="Escribe con tus propias palabras..."></textarea>
+<label>¿Qué quieres expresar?</label><textarea id="feeling" placeholder="Lo que nunca has podido decir..."></textarea>
+<label>¿Cómo quieres que sea?</label>
+<div class="cards" style="margin-top:10px">
+<div class="card" onclick="styleChoice(this,'Breve')"><b>Breve</b><p>Directa y sencilla</p></div>
+<div class="card" onclick="styleChoice(this,'Profunda')"><b>Profunda</b><p>Emocional y reflexiva</p></div>
+</div>
+<button class="btn" onclick="generate()">Crear mi carta ✨</button>
+</section>
+
+<section id="result" class="screen">
+<button class="back" onclick="show('questions')">← Editar</button>
+<h2>Estas son tus palabras.</h2>
+<p>Una primera versión creada a partir de lo que me contaste.</p>
+<div class="letter">
+<h3 id="letterTitle">Para ti, con algo que necesito decirte</h3>
+<p id="letterText"></p>
+</div>
+<button class="btn">Editar carta</button>
+<button class="btn secondary">Guardar / compartir</button>
+<p class="small">En la siguiente versión podremos añadir cartas premium y pagos.</p>
+</section>
+
+</div>
+<script>
+let type='', tone='Profunda';
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function choose(x){type=x;show('questions')}
+function styleChoice(el,x){tone=x;document.querySelectorAll('#questions .card').forEach(c=>c.style.border='1px solid #eadfdb');el.style.border='2px solid #9b5c68'}
+function generate(){
+ const person=document.getElementById('person').value||'ti';
+ const story=document.getElementById('story').value||'todo lo que ha pasado entre nosotros';
+ const feeling=document.getElementById('feeling').value||'lo que llevo dentro';
+ document.getElementById('letterText').innerText=
+ `Querido/a ${person}:\n\nHe pensado mucho en ${story}. Hay cosas que no siempre encontramos la forma de decir, y por eso hoy quiero intentarlo. Lo que realmente quiero expresarte es ${feeling}.\n\nNo escribo estas palabras para cambiar el pasado, sino para poner en ellas aquello que mi corazón necesitaba decir. Ojalá puedas recibirlas con la misma sinceridad con la que fueron escritas.\n\nCon cariño.`;
+ show('result')
+}
+</script>
+</body>
+</html>
